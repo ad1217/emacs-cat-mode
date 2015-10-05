@@ -33,10 +33,6 @@
 (defvar cat-special-cat "special")
 (defvar cat-special-buffers '("*scratch*" "*Messages*"))
 
-(setq-default mode-line-format
-			  (append mode-line-format
-					  '((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
-
 (defun cat-set (cat)
   "Sets the current buffer's 'buffer-cat' and 'current-cat' to CAT."
   (interactive (list (completing-read "Cat: " (cat-list-cats))))
@@ -129,5 +125,18 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 				(cat-update-ibuffer-groups)
 				(ibuffer-switch-to-saved-filter-groups "cats-mode")
 				(advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
+
+(define-minor-mode cat-mode
+  ""
+  :init-value nil
+  :lighter ""
+  :global t
+  (if cat-mode
+	  (setq-default mode-line-format
+			  (append mode-line-format
+					  '((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
+	(setq-default mode-line-format
+				  (remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
+						  mode-line-format))))
 
 ;;; cat-mode.el ends here
