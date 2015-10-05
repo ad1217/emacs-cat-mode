@@ -126,6 +126,7 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 				(ibuffer-switch-to-saved-filter-groups "cats-mode")
 				(advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
 
+;;;###autoload
 (define-minor-mode cat-mode
   ""
   :init-value nil
