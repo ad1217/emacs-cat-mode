@@ -140,4 +140,6 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 				  (remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
 						  mode-line-format))))
 
+(provide 'cat-mode)
+
 ;;; cat-mode.el ends here
