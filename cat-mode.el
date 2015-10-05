@@ -1,4 +1,25 @@
-;; Cat-mode: Buffer categories
+;;; cat-mode.el --- Buffer management with catagories.
+
+;; Copyright (C) 2015-
+;;
+;; Author: Adam Goldsmith <adam@adamgoldsmith.name>
+;; Created: 3 Oct 2015
+;; Homepage: http://github.com/ad1217/emacs-cat-mode
+;; Version: 0.1
+;; Keywords: convenience, usability
+;; Package-Requires: ((ibuffer))
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; CC-BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/
+
+;;; Commentary:
+
+;; Enable with (cat-mode 1)
+
+;;; Code:
 
 (defvar buffer-cat)
 (make-variable-buffer-local 'buffer-cat)
@@ -108,3 +129,5 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 				(cat-update-ibuffer-groups)
 				(ibuffer-switch-to-saved-filter-groups "cats-mode")
 				(advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
+
+;;; cat-mode.el ends here
