@@ -65,9 +65,6 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
   (setq cat-frame-cat (format "frame%d" (incf cat-frame-number)))
   (setq current-cat cat-frame-cat))
 
-(add-hook 'buffer-list-update-hook #'cat-new-buffers)
-(add-hook 'after-make-frame-functions #'cat-new-frame)
-
 (defun cat-list-buffers (cat)
   "Returns a list of buffers in CAT"
   (remove nil (mapcar (lambda (buf) (if (string= (cat-get buf) cat) buf))
@@ -133,12 +130,18 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
   :lighter ""
   :global t
   (if cat-mode
+	  (lambda ()
+		(setq-default mode-line-format
+					  (append mode-line-format
+							  '((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
+		(add-hook 'buffer-list-update-hook #'cat-new-buffers)
+		(add-hook 'after-make-frame-functions #'cat-new-frame))
+	(lambda ()
 	  (setq-default mode-line-format
-			  (append mode-line-format
-					  '((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
-	(setq-default mode-line-format
-				  (remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
-						  mode-line-format))))
+					(remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
+							mode-line-format))
+	  (remove-hook 'buffer-list-update-hook #'cat-new-buffers)
+	  (remove-hook 'after-make-frame-functions #'cat-new-frame))))
 
 (provide 'cat-mode)
 
