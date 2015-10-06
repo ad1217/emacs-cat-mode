@@ -30,8 +30,20 @@
 (defvar cat-frame-cat "frame0")
 (make-variable-frame-local 'cat-frame-cat)
 
-(defvar cat-special-cat "special")
-(defvar cat-special-buffers '("*scratch*" "*Messages*"))
+(defgroup cat-mode nil
+  "Buffer management with catagories."
+  :group 'convenience
+  :prefix "cat-")
+
+(defcustom cat-special-cat "special"
+  "The name of the \"special\" cat"
+  :type 'string
+  :group 'cat-mode)
+
+(defcustom cat-special-buffers '("*scratch*" "*Messages*")
+  "Names of buffers to put in 'cat-special-cat'"
+  :type '(repeat string)
+  :group 'cat-mode)
 
 (defun cat-set (cat)
   "Sets the current buffer's 'buffer-cat' and 'current-cat' to CAT."
