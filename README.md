@@ -12,9 +12,7 @@ Introducing cat-mode! Cat-mode is a mode that helps manage buffers by assigning 
   * Cats! (Does not include any actual cats)
 
 ### Future Features (If I, or someone else, ever gets around to them) ###
-  * Actually being a minor mode
   * Being less poorly written
-  * Customizable variables
   * Setting cats by projectile projects
   * A function to run functions (such as switch-buffer) with only the buffers in a cat
 
@@ -25,7 +23,9 @@ Introducing cat-mode! Cat-mode is a mode that helps manage buffers by assigning 
   * Doesn't do window saving/restoring
 
 ## Usage ##
-To install, just load the file. At the moment, you can't really customize much (without editing the source, obviously).
+To install, just load the file. If using [quelpa](https://github.com/quelpa/quelpa), use this recipe: `cat-mode :fetcher github :repo "ad1217/emacs-cat-mode"`.
+Load with `(cat-mode 1)`. Use `M-x customize-group RET cat-mode RET` to customize. Ibuffer usage is highly recommended. Turning on `ibuffer-auto-mode` is also recommended.
+
 ### Commands ###
   * `cat-set`: Sets the current buffer's cat
   * `cat-set-ibuffer`: Like cat-set, but operates on all marked buffers in ibuffer
