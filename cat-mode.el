@@ -123,6 +123,20 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 				(ibuffer-switch-to-saved-filter-groups "cats-mode")
 				(advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
 
+(defun cat-init ()
+  (setq-default mode-line-format
+				(append mode-line-format
+						'((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
+  (add-hook 'buffer-list-update-hook #'cat-new-buffers)
+  (add-hook 'after-make-frame-functions #'cat-new-frame))
+
+(defun cat-deinit ()
+  (setq-default mode-line-format
+				(remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
+						mode-line-format))
+  (remove-hook 'buffer-list-update-hook #'cat-new-buffers)
+  (remove-hook 'after-make-frame-functions #'cat-new-frame))
+
 ;;;###autoload
 (define-minor-mode cat-mode
   ""
@@ -130,18 +144,8 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
   :lighter ""
   :global t
   (if cat-mode
-	  (lambda ()
-		(setq-default mode-line-format
-					  (append mode-line-format
-							  '((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
-		(add-hook 'buffer-list-update-hook #'cat-new-buffers)
-		(add-hook 'after-make-frame-functions #'cat-new-frame))
-	(lambda ()
-	  (setq-default mode-line-format
-					(remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
-							mode-line-format))
-	  (remove-hook 'buffer-list-update-hook #'cat-new-buffers)
-	  (remove-hook 'after-make-frame-functions #'cat-new-frame))))
+	  (cat-init)
+	(cat-deinit)))
 
 (provide 'cat-mode)
 
