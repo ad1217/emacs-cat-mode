@@ -45,6 +45,11 @@
   :type '(repeat string)
   :group 'cat-mode)
 
+(defcustom cat-ibuffer 't
+  "Toggle ibuffer support"
+  :type 'boolean
+  :group 'cat-mode)
+
 (defun cat-set (cat)
   "Sets the current buffer's 'buffer-cat' and 'current-cat' to CAT."
   (interactive (list (completing-read "Cat: " (cat-list-cats))))
@@ -95,59 +100,73 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
   (interactive (list (completing-read "Kill Cat: " (cat-list-cats))))
   (mapc #'kill-buffer (cat-list-buffers cat)))
 
-(with-eval-after-load "ibuffer"
-  (require 'ibuf-ext)
+(defun cat-init-ibuffer ()
+  (with-eval-after-load "ibuffer"
+	(require 'ibuf-ext)
 
-  (define-ibuffer-filter cats
-	  "Filter to buffers of current cat."
-	(:description "cats-mode"
-				  :reader (completing-read "Filter by Cat: " (cat-list-cats)))
-	(cat-buffer-in-cat buf qualifier))
+	(define-ibuffer-filter cats
+		"Filter to buffers of current cat."
+	  (:description "cats-mode"
+					:reader (completing-read "Filter by Cat: " (cat-list-cats)))
+	  (cat-buffer-in-cat buf qualifier))
 
-  (defun cat-update-ibuffer-groups ()
-	"Update or create the ibuffer groups for cat-mode."
+	(defun cat-update-ibuffer-groups ()
+	  "Update or create the ibuffer groups for cat-mode."
+	  (setq ibuffer-saved-filter-groups
+			(delete* "cat-mode" ibuffer-saved-filter-groups
+					 :test 'string= :key 'car))
+	  (add-to-list 'ibuffer-saved-filter-groups
+				   (cons "cat-mode" (delete* nil
+											 (mapcar #'(lambda (pn)
+														 (list pn (cons 'predicate
+																		`(string= buffer-cat ,pn))))
+													 (cat-list-cats))
+											 :test 'string= :key 'car))))
+
+	(defun cat-update-ibuffer (&optional arg silent)
+	  "Creates or updates the ibuffer groups. Arguments are ignored."
+	  (cat-update-ibuffer-groups)
+	  (setq ibuffer-filter-groups
+			(cdr (assoc "cat-mode" ibuffer-saved-filter-groups))))
+
+	(defun cat-set-ibuffer (cat)
+	  "Sets all marked buffers in ibuffer to cat"
+	  (interactive (list (completing-read "Cat: " (cat-list-cats))))
+	  (ibuffer-do-eval `(cat-set ,cat))
+	  (ibuffer-update nil t))
+
+	(add-hook 'ibuffer-mode-hook
+			  #'(lambda ()
+				  (cat-update-ibuffer-groups)
+				  (ibuffer-switch-to-saved-filter-groups "cats-mode")
+				  (advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
+
+  (defun cat-deinit-ibuffer ()
 	(setq ibuffer-saved-filter-groups
 		  (delete* "cat-mode" ibuffer-saved-filter-groups
 				   :test 'string= :key 'car))
-	(add-to-list 'ibuffer-saved-filter-groups
-				 (cons "cat-mode" (delete* nil
-					   (mapcar #'(lambda (pn)
-								   (list pn (cons 'predicate
-												  `(string= buffer-cat ,pn))))
-							   (cat-list-cats))
-				 :test 'string= :key 'car))))
-
-  (defun cat-update-ibuffer (&optional arg silent)
-	"Creates or updates the ibuffer groups. Arguments are ignored."
-	(cat-update-ibuffer-groups)
-	(setq ibuffer-filter-groups
-		  (cdr (assoc "cat-mode" ibuffer-saved-filter-groups))))
-
-  (defun cat-set-ibuffer (cat)
-	"Sets all marked buffers in ibuffer to cat"
-	(interactive (list (completing-read "Cat: " (cat-list-cats))))
-	(ibuffer-do-eval `(cat-set ,cat))
-	(ibuffer-update nil t))
-  
-  (add-hook 'ibuffer-mode-hook
-			#'(lambda ()
-				(cat-update-ibuffer-groups)
-				(ibuffer-switch-to-saved-filter-groups "cats-mode")
-				(advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
+	(remove-hook 'ibuffer-mode-hook
+				 #'(lambda ()
+					 (cat-update-ibuffer-groups)
+					 (ibuffer-switch-to-saved-filter-groups "cats-mode")
+					 (advice-add 'ibuffer-update :before #'cat-update-ibuffer)))
+	(advice-remove 'ibuffer-update #'cat-update-ibuffer))
 
 (defun cat-init ()
   (setq-default mode-line-format
 				(append mode-line-format
 						'((:eval (format "[%s|%s] " cat-frame-cat current-cat)))))
   (add-hook 'buffer-list-update-hook #'cat-new-buffers)
-  (add-hook 'after-make-frame-functions #'cat-new-frame))
+  (add-hook 'after-make-frame-functions #'cat-new-frame)
+  (if cat-ibuffer (cat-init-ibuffer)))
 
 (defun cat-deinit ()
   (setq-default mode-line-format
 				(remove '(:eval (format "[%s|%s] " cat-frame-cat current-cat))
 						mode-line-format))
   (remove-hook 'buffer-list-update-hook #'cat-new-buffers)
-  (remove-hook 'after-make-frame-functions #'cat-new-frame))
+  (remove-hook 'after-make-frame-functions #'cat-new-frame)
+  (if cat-ibuffer (cat-deinit-buffer)))
 
 ;;;###autoload
 (define-minor-mode cat-mode
