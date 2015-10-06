@@ -139,7 +139,7 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 			  #'(lambda ()
 				  (cat-update-ibuffer-groups)
 				  (ibuffer-switch-to-saved-filter-groups "cats-mode")
-				  (advice-add 'ibuffer-update :before #'cat-update-ibuffer))))
+				  (advice-add 'ibuffer-update :before #'cat-update-ibuffer)))))
 
   (defun cat-deinit-ibuffer ()
 	(setq ibuffer-saved-filter-groups
