@@ -40,7 +40,7 @@
   :type 'string
   :group 'cat-mode)
 
-(defcustom cat-special-buffers '("*scratch*" "*Messages*")
+(defcustom cat-special-buffers '("*scratch*" "*Messages*" "*Ibuffer*" "*Help*" "*Completions*")
   "Names of buffers to put in 'cat-special-cat'"
   :type '(repeat string)
   :group 'cat-mode)
