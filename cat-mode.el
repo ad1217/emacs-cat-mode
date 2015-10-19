@@ -131,9 +131,15 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 
 	(defun cat-set-ibuffer (cat)
 	  "Sets all marked buffers in ibuffer to cat"
-	  (interactive (list (completing-read "Cat: " (cat-list-cats))))
-	  (ibuffer-do-eval `(cat-set ,cat))
-	  (ibuffer-update nil t))
+	  (interactive (list (if (ibuffer-marked-buffer-names)
+							 (completing-read "Cat: " (cat-list-cats) nil 'confirm)
+						   nil)))
+	  (if (not cat)
+		  (message "You must select a buffer!")
+		(if (string= cat "")
+			(message "Cat must not be empty!")
+		  (ibuffer-do-eval `(cat-set ,cat))
+		  (ibuffer-update nil t))))
 
 	(add-hook 'ibuffer-mode-hook
 			  #'(lambda ()
