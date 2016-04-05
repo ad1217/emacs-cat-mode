@@ -185,7 +185,7 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 						mode-line-format))
   (remove-hook 'buffer-list-update-hook #'cat-new-buffers)
   (remove-hook 'after-make-frame-functions #'cat-new-frame)
-  (if cat-ibuffer (cat-deinit-buffer)))
+  (if cat-ibuffer (cat-deinit-ibuffer)))
 
 ;;;###autoload
 (define-minor-mode cat-mode
