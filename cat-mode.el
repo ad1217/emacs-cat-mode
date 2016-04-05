@@ -98,7 +98,8 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
 (defun kill-cat (cat)
   "Kills all buffers in CAT."
   (interactive (list (completing-read "Kill Cat: " (cat-list-cats))))
-  (mapc #'kill-buffer (cat-list-buffers cat)))
+  (if (y-or-n-p (concat "Kill these buffers: " (mapconcat #'buffer-name (cat-list-buffers current-cat) " ") "?"))
+	  (mapc #'kill-buffer (cat-list-buffers cat))))
 
 (defun cat-init-ibuffer ()
   (with-eval-after-load "ibuffer"
