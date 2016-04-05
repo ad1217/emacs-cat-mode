@@ -101,6 +101,18 @@ Sets buffers with names in 'cat-special-buffers' to 'cat-special-cat'."
   (if (y-or-n-p (concat "Kill these buffers: " (mapconcat #'buffer-name (cat-list-buffers current-cat) " ") "?"))
 	  (mapc #'kill-buffer (cat-list-buffers cat))))
 
+(defun kill-this-cat ()
+  "Kills all buffers in the current cat"
+  (interactive)
+  (unless (string= current-cat cat-special-cat)
+	(kill-cat current-cat)))
+
+(defun kill-this-cat-kill-terminal ()
+  "Kills all buffers in the current cat, then kills the terminal"
+  (interactive)
+  (kill-this-cat)
+  (save-buffers-kill-terminal))
+
 (defun cat-init-ibuffer ()
   (with-eval-after-load "ibuffer"
 	(require 'ibuf-ext)
