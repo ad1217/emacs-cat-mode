@@ -1,4 +1,6 @@
-# Cat Mode &#128008;#
+# Cat Mode &#128008; #
+
+Doesn't work with emacs 26, and really wasn't terribly well written anyway. I wouldn't suggest using it anymore, although I hope to rewrite it someday.
 
 ## Description ##
 Introducing cat-mode! Cat-mode is a mode that helps manage buffers by assigning them cats (short for catagories). It behaves a little bit like [persp-mode](https://github.com/Bad-ptr/persp-mode.el) and [perspective](https://github.com/nex3/perspective-el).
